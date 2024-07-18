@@ -56,7 +56,8 @@ def process_cal_disp_s1(params):
     --------------------------------------------------
     """
 
-    k, vec, veh, vi, kec, keh, ki, wr_min, wr_max, wr_num, wi_min, wi_max, wi_num, eps = params
+    k, vec, veh, vi, kec, keh, ki, \
+        wr_min, wr_max, wr_num, wi_min, wi_max, wi_num, eps = params
 
     ans = []
 
@@ -135,7 +136,12 @@ def cal_disp_s1_p(
 
     params_list = \
         [
-         (k, vec, veh, vi, kec, keh, ki, wr_min, wr_max, wr_num, wi_min, wi_max, wi_num, eps)
+         (k,
+          vec, veh, vi,
+          kec, keh, ki,
+          wr_min, wr_max, wr_num,
+          wi_min, wi_max, wi_num,
+          eps)
          for k in k_list[1:]
         ]
 
@@ -185,7 +191,7 @@ if __name__ == '__main__':
 
     os.makedirs('data', exist_ok=True)
     os.makedirs('fig', exist_ok=True)
-    
+
     np.savetxt('data/ea_teh_eq_{}tec_kwrwi.txt'.format(int(Teh/Tec)), ans)
 
     wr_1 = []
@@ -229,5 +235,6 @@ if __name__ == '__main__':
     ax2.tick_params(bottom=True, top=True, labelbottom=True, direction='in')
     ax2.legend()
 
-    plt.savefig('fig/ea_disp_teh_eq_{}tec.png'.format(int(Teh/Tec)), bbox_inches="tight")
+    plt.savefig('fig/ea_disp_teh_eq_{}tec.png'.format(int(Teh/Tec)),
+                bbox_inches="tight")
     plt.close()

@@ -39,5 +39,5 @@ wi_min, wi_max, wi_num = -50, 0, 400
 # threshold value below which a value is treated as zero
 eps = 1e-3
 
-if __name__=='__main__':
+if __name__ == '__main__':
     print(globals())

@@ -56,7 +56,8 @@ def process_cal_disp_s1(params):
     --------------------------------------------------
     """
 
-    k, ve, vi, ke, ki, wr_min, wr_max, wr_num, wi_min, wi_max, wi_num, eps = params
+    k, ve, vi, ke, ki,\
+        wr_min, wr_max, wr_num, wi_min, wi_max, wi_num, eps = params
 
     ans = []
 
@@ -131,7 +132,11 @@ def cal_disp_s1_p(
 
     params_list = \
         [
-         (k, ve, vi, ke, ki, wr_min, wr_max, wr_num, wi_min, wi_max, wi_num, eps)
+         (k,
+          ve, vi, ke, ki,
+          wr_min, wr_max, wr_num,
+          wi_min, wi_max, wi_num,
+          eps)
          for k in k_list[1:]
         ]
 
@@ -178,7 +183,7 @@ if __name__ == '__main__':
 
     os.makedirs('data', exist_ok=True)
     os.makedirs('fig', exist_ok=True)
-    
+
     np.savetxt('data/ia_te_eq_{}ti_kwrwi.txt'.format(int(Te/Ti)), ans)
 
     wr_1 = []
@@ -223,5 +228,6 @@ if __name__ == '__main__':
     ax2.tick_params(bottom=True, top=True, labelbottom=True, direction='in')
     ax2.legend()
 
-    plt.savefig('fig/ia_disp_te_eq_{}ti.png'.format(int(Te/Ti)), bbox_inches="tight")
+    plt.savefig('fig/ia_disp_te_eq_{}ti.png'.format(int(Te/Ti)),
+                bbox_inches="tight")
     plt.close()
