@@ -9,12 +9,14 @@ import os
 
 import input_lang as input
 
+
 def plasma_dispersion_func(zeta_j):
     """
     Calculate plasma dispersion function
     """
     zeta = 1j * np.sqrt(np.pi) * wofz(zeta_j)
     return zeta
+
 
 def plasma_dispersion_func_deriv(zeta_j):
     """
@@ -25,6 +27,7 @@ def plasma_dispersion_func_deriv(zeta_j):
     zeta = plasma_dispersion_func(zeta_j)
     return -2 * (1 + zeta_j*zeta)
 
+
 def plasma_dispersion_func_deriv2(zeta_j):
     """
     Calculate 2nd derivative of plasma dispersion function
@@ -33,6 +36,7 @@ def plasma_dispersion_func_deriv2(zeta_j):
     """
     zeta = plasma_dispersion_func(zeta_j)
     return -2 * (zeta - 2*zeta_j - 2*(zeta_j**2)*zeta)
+
 
 def process_cal_disp_s1(params):
 
@@ -115,11 +119,10 @@ def process_cal_disp_s1(params):
     ans_tmp = []
 
     for ele in dr_idx:
-        #print(ele)
         if ele in di_idx:
             line = ele[0]
             col = ele[1]
-            if (abs(dr[line, col])<eps and abs(di[line, col])<eps):
+            if (abs(dr[line, col]) < eps and abs(di[line, col]) < eps):
                 ans_tmp.append([wr[line, col], wi[line, col]])
 
     # Newton method
@@ -133,16 +136,13 @@ def process_cal_disp_s1(params):
                 zeta_d = plasma_dispersion_func_deriv(z_j)
                 zeta_d2 = plasma_dispersion_func_deriv2(z_j)
                 disp = 1 - ((kj**2)/(2*(k**2)))*zeta_d
-                
+
                 dr = disp.real
                 di = disp.imag
-                
-                #print(abs(dr), abs(di))
-                
-                if (abs(dr)<1e-5 and abs(di)<1e-5):
+
+                if (abs(dr) < 1e-5 and abs(di) < 1e-5):
                     ans.append([k, omega.real, omega.imag])
                     break
-                # print('it2', it2, dr, di)
                 disp_w = -((kj**2)/(2*(k**2)))*(1/(np.sqrt(2)*k*vj))*zeta_d2
                 omega = omega - disp/disp_w
 

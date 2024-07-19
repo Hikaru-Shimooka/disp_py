@@ -17,6 +17,7 @@ def plasma_dispersion_func(zeta_j):
     zeta = 1j * np.sqrt(np.pi) * wofz(zeta_j)
     return zeta
 
+
 def plasma_dispersion_func_deriv(zeta_j):
     """
     Calculate derivative of plasma dispersion function
@@ -25,6 +26,7 @@ def plasma_dispersion_func_deriv(zeta_j):
     """
     zeta = plasma_dispersion_func(zeta_j)
     return -2 * (1 + zeta_j*zeta)
+
 
 def plasma_dispersion_func_deriv2(zeta_j):
     """
@@ -128,11 +130,10 @@ def process_cal_disp_s1(params):
     ans_tmp = []
 
     for ele in dr_idx:
-        #print(ele)
         if ele in di_idx:
             line = ele[0]
             col = ele[1]
-            if (abs(dr[line, col])<eps and abs(di[line, col])<eps):
+            if (abs(dr[line, col]) < eps and abs(di[line, col]) < eps):
                 ans_tmp.append([wr[line, col], wi[line, col]])
 
     # Newton method
@@ -151,18 +152,21 @@ def process_cal_disp_s1(params):
                 zeta_ec2 = plasma_dispersion_func_deriv2(z_ec)
                 zeta_eh2 = plasma_dispersion_func_deriv2(z_eh)
                 zeta_i2 = plasma_dispersion_func_deriv2(z_i)
-                disp = 2*(k**2) - (kec**2)*zeta_ec - (keh**2)*zeta_eh - (ki**2)*zeta_i
-                
+                disp = (2*(k**2)
+                        - (kec**2)*zeta_ec - (keh**2)*zeta_eh - (ki**2)*zeta_i)
+
                 dr = disp.real
                 di = disp.imag
-                
-                if (abs(dr)<1e-5 and abs(di)<1e-5):
+
+                if (abs(dr) < 1e-5 and abs(di) < 1e-5):
                     ans.append([k, omega.real, omega.imag])
                     break
                 # print('it2', it2, dr, di)
-                disp_w = -((kec**2)/(2*(k**2)))*(1/(np.sqrt(2)*k*vec))*zeta_ec2 \
-                         -((keh**2)/(2*(k**2)))*(1/(np.sqrt(2)*k*veh))*zeta_eh2 \
-                         -((ki**2)/(2*(k**2)))*(1/(np.sqrt(2)*k*vi))*zeta_i2
+                disp_w = (
+                    - ((kec**2)/(2*(k**2)))*(1/(np.sqrt(2)*k*vec))*zeta_ec2
+                    - ((keh**2)/(2*(k**2)))*(1/(np.sqrt(2)*k*veh))*zeta_eh2
+                    - ((ki**2)/(2*(k**2)))*(1/(np.sqrt(2)*k*vi))*zeta_i2
+                    )
                 omega = omega - disp/disp_w
 
     ans = np.array(ans)
@@ -241,7 +245,9 @@ if __name__ == '__main__':
     os.makedirs('../data_newton', exist_ok=True)
     os.makedirs('../fig_newton', exist_ok=True)
 
-    np.savetxt('../data_newton/ea_teh_eq_{}tec_kwrwi.txt'.format(int(Teh/Tec)), ans)
+    np.savetxt(
+               '../data_newton/ea_teh_eq_{}tec_kwrwi.txt'.format(int(Teh/Tec)),
+               ans)
 
     wr_1 = []
     wi_1 = []

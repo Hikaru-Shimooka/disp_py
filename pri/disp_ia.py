@@ -56,7 +56,7 @@ def process_cal_disp_s1(params):
     --------------------------------------------------
     """
 
-    k, ve, vi, ke, ki,\
+    k, ve, vi, ke, ki, \
         wr_min, wr_max, wr_num, wi_min, wi_max, wi_num, eps = params
 
     ans = []
