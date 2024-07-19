@@ -10,14 +10,30 @@ import os
 import input_ia as input
 
 
+def plasma_dispersion_func(zeta_j):
+    """
+    Calculate plasma dispersion function
+    """
+    zeta = 1j * np.sqrt(np.pi) * wofz(zeta_j)
+    return zeta
+
 def plasma_dispersion_func_deriv(zeta_j):
     """
     Calculate derivative of plasma dispersion function
 
     input : complex
     """
-    zeta = 1j * np.sqrt(np.pi) * wofz(zeta_j)
+    zeta = plasma_dispersion_func(zeta_j)
     return -2 * (1 + zeta_j*zeta)
+
+def plasma_dispersion_func_deriv2(zeta_j):
+    """
+    Calculate 2nd derivative of plasma dispersion function
+
+    input : complex
+    """
+    zeta = plasma_dispersion_func(zeta_j)
+    return -2 * (zeta - 2*zeta_j - 2*(zeta_j**2)*zeta)
 
 
 def process_cal_disp_s1(params):
@@ -105,12 +121,41 @@ def process_cal_disp_s1(params):
                 di_idx.append([li, c])
                 di_idx.append([li+1, c])
 
+    ans_tmp = []
+
     for ele in dr_idx:
+        #print(ele)
         if ele in di_idx:
             line = ele[0]
             col = ele[1]
-            if (abs(dr[line, col]) < eps and abs(di[line, col]) < eps):
-                ans.append([k, wr[line, col], wi[line, col]])
+            if (abs(dr[line, col])<eps and abs(di[line, col])<eps):
+                ans_tmp.append([wr[line, col], wi[line, col]])
+
+    # Newton method
+    if len(ans_tmp) != 0:
+        for w in ans_tmp:
+            # print(zeta_j)
+            omega = w[0]+w[1]*1j
+            for it2 in range(int(1e6)):
+                # print('it2', it2)
+                z_e = omega/(np.sqrt(2)*k*ve)
+                z_i = omega/(np.sqrt(2)*k*vi)
+                zeta_e = plasma_dispersion_func_deriv(z_e)
+                zeta_i = plasma_dispersion_func_deriv(z_i)
+                zeta_e2 = plasma_dispersion_func_deriv2(z_e)
+                zeta_i2 = plasma_dispersion_func_deriv2(z_i)
+                disp = 2*(k**2) - (ke**2)*zeta_e - (ki**2)*zeta_i
+                
+                dr = disp.real
+                di = disp.imag
+                
+                if (abs(dr)<1e-5 and abs(di)<1e-5):
+                    ans.append([k, omega.real, omega.imag])
+                    break
+                # print('it2', it2, dr, di)
+                disp_w = -((ke**2)/(2*(k**2)))*(1/(np.sqrt(2)*k*ve))*zeta_e2 \
+                         -((ki**2)/(2*(k**2)))*(1/(np.sqrt(2)*k*vi))*zeta_i2
+                omega = omega - disp/disp_w
 
     ans = np.array(ans)
     return ans
@@ -181,10 +226,10 @@ if __name__ == '__main__':
                         eps
                         )
 
-    os.makedirs('../data_pri', exist_ok=True)
-    os.makedirs('../fig_pri', exist_ok=True)
+    os.makedirs('../data_newton', exist_ok=True)
+    os.makedirs('../fig_newton', exist_ok=True)
 
-    np.savetxt('../data_pri/ia_te_eq_{}ti_kwrwi.txt'.format(int(Te/Ti)), ans)
+    np.savetxt('../data_newton/ia_te_eq_{}ti_kwrwi.txt'.format(int(Te/Ti)), ans)
 
     wr_1 = []
     wi_1 = []
@@ -228,6 +273,6 @@ if __name__ == '__main__':
     ax2.tick_params(bottom=True, top=True, labelbottom=True, direction='in')
     ax2.legend()
 
-    plt.savefig('../fig_pri/ia_disp_te_eq_{}ti.png'.format(int(Te/Ti)),
+    plt.savefig('../fig_newton/ia_disp_te_eq_{}ti.png'.format(int(Te/Ti)),
                 bbox_inches="tight")
     plt.close()
